@@ -1,0 +1,7 @@
+# TODO
+
+# 1. Create core driver scripts and functions
+# 2. Create constants file (e.g. Bernacchi et al. MM constants)
+# 3. Create functions to be minimized
+# 4. Create QA/QC diagnostic plots
+# 5. Create output diagnostic figs

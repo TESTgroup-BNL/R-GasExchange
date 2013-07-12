@@ -1,0 +1,22 @@
+Package: GasExchange
+Type: Package
+Title: A set of functions for processing LiCor 6400 leaf gas exchange data
+Version: 0.80
+Date: 2013-07-12
+Author: Shawn P. Serbin
+Maintainer: Shawn P. Serbin <serbin@wisc.edu>
+Description: A plant physiology package containing functions for processing
+             LiCor 6400 gas exchange data.  This package can be used to 
+             process A-Ci and A-PPFD curves.
+Depends:
+    XML,
+    DEoptim
+Suggests:
+    testthat,
+SystemRequirements: 
+OS_type: Windows, unix, mac
+License: FreeBSD + file LICENSE
+Copyright: Authors
+LazyLoad: yes
+LazyData: FALSE
+Collate:
