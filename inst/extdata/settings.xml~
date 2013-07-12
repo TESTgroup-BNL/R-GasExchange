@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<settings>
+  <!-- Directory of LiCor data files or sub-directories to process -->
+  <asd.dir>PATH TO LICOR FILE(S)</asd.dir>
+  <!-- Main output directory -->
+  <output.dir>PATH TO OUTPUT</output.dir>
+  <instrument>
+     <name>LiCor.6400</name>
+  </instrument>
+  <processing.options>
+     <!-- Type E.g. A-Ci, A-PPFD, Both -->
+     <type>A-Ci</type>
+     <!-- -->
+     <!-- Constants -->
+     <constants>bernacchi</constants>
+     <!-- -->
+     <!-- QA/QC options -->
+     <!-- Vcmax Ci cutoff -->
+     <vcmax.ci.cutoff>220</vcmax.ci.cutoff>
+     <!-- Jmax Ci cutoff -->
+     <jmax.ci.cutoff>450</jmax.ci.cutoff>
+     <!-- Conductance cutoff -->
+     <conductance.cutoff>0.08</conductance.cutoff>
+     <!-- Ci cutoff lower -->
+     <ci.cutoff.lower>0</ci.cutoff.lower>
+     <!-- Ci cutoff upper -->
+     <ci.cutoff.upper>2000</ci.cutoff.upper>
+     <!-- -->
+  </processing.options>
+  <algorithm.options>
+     <!-- Minimization algorithm -->
+     <min.alg>DEoptim</min.alg>
+     <!-- Minimization algorithm options --> 
+     <!-- DEoptim lower bounds. Rd, Vcmax, Jmax, .... -->
+     <deoptim.lower.bounds>c(-10,5,5)</deoptim.lower.bounds>
+     <!-- -->
+  </algorithm.options>
+  <other.options>
+     <!-- Option to set file extension of input/output files -->
+     <output.file.ext>.csv</output.file.ext>
+  </other.options>
+</settings>

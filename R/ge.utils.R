@@ -7,7 +7,7 @@
 ##'
 ##' Read settings file for GE processing
 ##' 
-##' @name settings
+##' @name ge.settings
 ##' @title parse settings file
 ##' @param input.file settings file containing information needed for GE processing
 ##'
@@ -21,7 +21,7 @@
 ##'
 ##' @author Shawn P. Serbin
 ##'
-settings <- function(input.file=NULL){
+ge.settings <- function(input.file=NULL){
   settings.xml <- NULL
   
   ### Parse input settings file
