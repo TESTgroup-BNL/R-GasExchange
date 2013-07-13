@@ -32,7 +32,7 @@
      <min.alg>DEoptim</min.alg>
      <!-- Minimization algorithm options --> 
      <!-- DEoptim lower bounds. Rd, Vcmax, Jmax, .... -->
-     <deoptim.lower.bounds>c(-10,5,5)</deoptim.lower.bounds>
+     <deoptim.lower.bounds>-10,5,5</deoptim.lower.bounds>
      <!-- -->
   </algorithm.options>
   <other.options>

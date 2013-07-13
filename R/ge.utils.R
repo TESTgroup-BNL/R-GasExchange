@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------------------------------------#
-# A set of helper functions
+# A set of helper functions for LiCor GE data processing
 #--------------------------------------------------------------------------------------------------#
 
 
@@ -48,6 +48,66 @@ ge.settings <- function(input.file=NULL){
   return(settings.list)
   
 } ### End of function
+#==================================================================================================#
+
+
+#--------------------------------------------------------------------------------------------------#
+##'
+##' A function to read in formatted LiCor 6400 data for processing
+##'
+##' @name read.ge.data
+##' @title A function to read in formatted LiCor 6400 data files
+##' 
+##' @export
+##' 
+read.ge.data <- function(data.dir=NULL,out.dir=NULL,ge.file.ext=".csv",QC=TRUE,
+                         output.file.ext=".csv",ge.dataframe=FALSE,settings.file=NULL){
+  
+  ### Set platform specific file path delimiter.  Probably will always be "/"
+  dlm <- .Platform$file.sep # <--- What is the platform specific delimiter?
+  
+  ### Check for proper input
+  if (is.null(settings.file) && is.null(file.dir)){
+    print("*********************************************************************************")
+    stop("******* ERROR: No input file directory given in settings file or function call. *******")
+  } else if (!is.null(file.dir)){
+    file.dir <- file.dir
+  } else if (!is.null(settings.file$data.dir)){
+    file.dir <- settings.file$data.dir
+  } 
+  
+  
+  if (QC==TRUE){
+    print("******** Applying QA/QC Checks to Data ********")
+    
+    ### Remove samples not passing initial QC
+    loc <- match("QC",toupper(names(ge.data)))
+    remove <- which(ge.data[loc]==1)
+    if(length(remove)>0){
+      ge.data <- ge.data[,-remove]
+    }
+    rm(loc,remove)
+    
+    ### Find sample info and data columns
+    pattern <- c("QC","COMMENTS")
+    x <- toupper(names(ge.data))
+    remove <- match(pattern,x)
+    if (length(remove)>0){
+      ge.data <- ge.data[,-remove]
+    }
+    rm(pattern,x,remove)
+    
+  } # End QC loop
+
+  
+  
+  
+  
+  
+  ### Algorithm options
+  #deoptim.lower.bounds <- as.numeric(strsplit(settings$algorithm.options$deoptim.lower.bounds,split = ",")[[1]])
+  
+} # End of function call
 #==================================================================================================#
 
 

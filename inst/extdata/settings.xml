@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <settings>
   <!-- Directory of LiCor data files or sub-directories to process -->
-  <asd.dir>PATH TO LICOR FILE(S)</asd.dir>
+  <data.dir>PATH TO LICOR FILE(S)</asd.dir>
   <!-- Main output directory -->
   <output.dir>PATH TO OUTPUT</output.dir>
   <instrument>
