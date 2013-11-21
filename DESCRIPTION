@@ -6,8 +6,8 @@ Date: 2013-07-12
 Author: Shawn P. Serbin
 Maintainer: Shawn P. Serbin <serbin@wisc.edu>
 Description: A plant physiology package containing functions for processing
-             LiCor 6400 gas exchange data.  This package can be used to 
-             process A-Ci and A-PPFD curves.
+    LiCor 6400 gas exchange data.  This package can be used to
+    process A-Ci and A-PPFD curves.
 Depends:
     XML,
     DEoptim
@@ -20,3 +20,5 @@ Copyright: Authors
 LazyLoad: yes
 LazyData: FALSE
 Collate:
+    'aci.photo.R'
+    'ge.utils.R'
