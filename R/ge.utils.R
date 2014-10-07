@@ -264,6 +264,12 @@ arrhenius.scaling <- function(temp1=NULL,temp2=NULL,E=NULL,Val.temp1=NULL){
   result <- Val.temp1*exp((E/R)*((1/temp1)-(1/temp2)))
   return(result)
   
+  # Param25 <- x[1]
+  # E <- x[2]
+  #Param <- Param25*exp((E*((Tleaf+273.15)-(stand.temp+273.15)))/((stand.temp+273.15)*R*(Tleaf+273.15)))
+  #RMSE <- sqrt(mean((Photo.Parameter-Param)^2))  ## RMSE cost function
+  #return(RMSE)
+  
 } # End of function
 #==================================================================================================#
 
