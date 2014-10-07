@@ -213,8 +213,61 @@ plot.ge.fit <- function(type=c("A-Ci","A-Q"),data,DEoptim.output,params,outdir,f
 #==================================================================================================#
 
 
-
-
+#--------------------------------------------------------------------------------------------------#
+##'
+##' Temperature response diagnostic figures
+##' @author Shawn P. Serbin
+##'  
+##'  very basic, needs updating
+##'  
+plot.temp.response <- function(type=c("Arrhenius","Peaked","June"),var,data,DEoptim.output,params,
+                               outdir,file,year){
+  type <- match.arg(type)
+  sep <- .Platform$file.sep
+  param.length <- length(DEoptim.output$optim$bestmem)
+  
+  ### Plot params
+  cexaxis <- 1.2
+  cexlab <- 1.4
+  
+  if (type=="Arrhenius"){
+    loc1 <- match(c("TLEAF",paste(toupper(var))),toupper(names(data)))
+    pdf(paste(outdir,sep,file,".pdf",sep=""),height=8,width=10)
+    plot(data[,loc1[1]],data[,loc1[2]],pch=21,bg="grey70",cex=3,cex.axis=cexaxis,xlim=c(range(data[,loc1[1]])[1]-2,
+                                                                                        range(data[,loc1[1]])[2]),
+         ylim=c(range(data[,loc1[2]])[1]-5,range(data[,loc1[2]])[2]+5),cex.lab=cexlab,xlab="Tleaf",
+         ylab="Vcmax",main=paste(file))
+    box(lwd=2.2)
+    
+    # Best member parameter trace plots
+    par(mfrow=c(2,1),mar=c(4,4.1,1,2)) #b, l, t, r
+    plot(DEoptim.output$member$bestmemit[,1],pch=21,bg="dark grey",col="dark grey",
+         cex=1.2,xlab="Iteration",ylab="Vc25",cex.axis=cexaxis,cex.lab=cexlab)
+    lines(DEoptim.output$member$bestmemit[,1],lty=2,lwd=1.8)
+    box(lwd=2.2)
+    plot(DEoptim.output$member$bestmemit[,2],pch=21,bg="dark grey",col="dark grey",
+         cex=1.2,xlab="Iteration",ylab="E",cex.axis=cexaxis,cex.lab=cexlab)
+    lines(DEoptim.output$member$bestmemit[,2],lty=2,lwd=1.8)
+    box(lwd=2.2)
+    
+    # Plot output
+    plotTemp = seq(10,80,0.2)
+    par(mfrow=c(1,1),mar=c(5,5,2,1))
+    ylim <- range(Photo.Parameter[,1])
+    plot(Tleaf, Photo.Parameter[,1], main=paste0(year),xlab="Temp C", ylab=var, cex.lab=2, pch=21, cex=2.2,bg="grey50",
+         xlim=c(15,40),ylim=c(ylim[1]-30,ylim[2]+10))
+    legend("topleft",legend=c(paste0(var,"25 = ",round(params[1],2)), paste0("Ev = ",round(params[2],2)),
+                              paste0("RMSE = ",round(params[3],2))),bty="n",cex=1.5)
+    lines(plotTemp,params[1,1]*exp((params[1,2]*((plotTemp+273.15)-(stand.temp+273.15)))/((stand.temp+273.15)*R*(plotTemp+273.15))),
+          ,lwd=4,col="black")
+    box(lwd=2.2)
+    
+    dev.off()
+  }
+  
+  
+} # End of function
+#==================================================================================================#
 
 
 ####################################################################################################
