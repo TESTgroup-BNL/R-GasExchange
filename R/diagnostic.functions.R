@@ -1,0 +1,22 @@
+#--------------------------------------------------------------------------------------------------#
+# A set of helper functions for LiCor GE data processing
+#--------------------------------------------------------------------------------------------------#
+
+
+#--------------------------------------------------------------------------------------------------#
+##'
+##' A function plot raw A-Ci, A-Q or other analysis curves.  Shows flagged observations.
+##'
+##' @name plot.raw 
+##' @title A function plot raw A-Ci, A-Q or other analysis curves.  Shows flagged observations.
+##' @param file.dir 
+##' @param out.dir Main output directory for diagnostic plots
+##' 
+
+
+} # End of function call
+#==================================================================================================#
+
+
+#--------------------------------------------------------------------------------------------------#
+##'

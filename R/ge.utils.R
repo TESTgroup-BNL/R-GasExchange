@@ -5,11 +5,11 @@
 
 #--------------------------------------------------------------------------------------------------#
 ##'
-##' Read settings file for GE processing
+##' Read settings file for spectra import and processing
 ##' 
-##' @name ge.settings
-##' @title parse settings file
-##' @param input.file settings file containing information needed for GE processing
+##' @name settings
+##' @title parse settings file used for spectra file import and processing
+##' @param input.file settings file containing information needed for spectra processing
 ##'
 ##' @examples
 ##' \dontrun{
@@ -21,7 +21,7 @@
 ##'
 ##' @author Shawn P. Serbin
 ##'
-ge.settings <- function(input.file=NULL){
+settings <- function(input.file=NULL){
   settings.xml <- NULL
   
   ### Parse input settings file
@@ -60,8 +60,8 @@ ge.settings <- function(input.file=NULL){
 ##' 
 ##' @export
 ##' 
-read.ge.data <- function(data.dir=NULL,out.dir=NULL,ge.file.ext=".csv",QC=TRUE,
-                         output.file.ext=".csv",ge.dataframe=FALSE,settings.file=NULL){
+#read.ge.data <- function(data.dir=NULL,out.dir=NULL,ge.file.ext=".csv",QC=TRUE,
+#                         output.file.ext=".csv",ge.dataframe=FALSE,settings.file=NULL){
   
   ### Set platform specific file path delimiter.  Probably will always be "/"
   dlm <- .Platform$file.sep # <--- What is the platform specific delimiter?
@@ -108,6 +108,131 @@ read.ge.data <- function(data.dir=NULL,out.dir=NULL,ge.file.ext=".csv",QC=TRUE,
   #deoptim.lower.bounds <- as.numeric(strsplit(settings$algorithm.options$deoptim.lower.bounds,split = ",")[[1]])
   
 } # End of function call
+#==================================================================================================#
+
+
+#--------------------------------------------------------------------------------------------------#
+##'
+##' !! NEEDS WORK !!
+##'
+##' QA/QC functions
+##' @param data input licor data
+##' @param out.dir output director for QC data and info
+##' @param Cond.cutoff cutoff for low conductance. set previously
+##' @param Ci.cutoff cutoff for nonsensical Cis
+##' @param Tleaf.cutoff cutoff for individual Tleaf variation from mean
+##' 
+##' @author Shawn P. Serbin
+##' 
+data.qc <- function(data=NULL,out.dir=NULL,Cond.cutoff=NULL,Ci.cutoff=NULL,
+                    Tleaf.cutoff=NULL){
+  
+  ### Remove samples not passing initial QC
+  loc <- match("QC",toupper(names(data)))
+  remove <- which(data[loc]==1)
+  if(length(remove)>0){
+    data <- data[-remove,]
+  }
+  rm(loc,remove)
+  
+  ### Remove QC and comments columns (if exists)
+  pattern <- c("QC","COMMENTS")
+  x <- toupper(names(data))
+  remove <- match(pattern,x)
+  if (length(remove)>0){
+    data <- data[,-remove]
+  }
+  rm(pattern,x,remove)
+  
+  ### Find data columns
+  pattern <- c("Tair","Tleaf","deltaT","RH_R","RH_S","PRESS","PARi","CO2Ref","PHOTO","COND","Ci")
+  pattern <- toupper(pattern)
+  x <- toupper(names(data))
+  keep <- match(pattern,x)
+  
+  ### Extract sample info
+  sample.info <- data[,-keep]
+  data <- data[,keep]
+  
+  # Clean up sample info, remove any white spaces
+  temp <- as.data.frame(lapply(sample.info,gsub,pattern=" ",replacement=""))
+  sample.info <- temp
+  rm(pattern,x,keep,temp)
+  
+  ### Apply QC filters to data
+  dims <- dim(data)
+  loc <- match(c("COND","CI"),toupper(names(data)))
+  cond.check <- which(data[,loc[1]]<Cond.cutoff)
+  ci.check <- which(data[,loc[2]]<Ci.cutoff[1] | data[,loc[2]]>Ci.cutoff[2])
+  all.check <- which(data[,loc[2]]<Ci.cutoff[1] | data[,loc[2]]>Ci.cutoff[2] | data[,loc[1]]<Cond.cutoff)
+  #nms <- unique(sample.info[check1,])
+  nms1 <- sample.info[cond.check,]
+  vals1 <- data[cond.check,loc[1]]
+  nms2 <- sample.info[ci.check,]
+  vals2 <- data[ci.check,loc[2]]
+  
+  # Tleaf check
+  if (!is.null(Tleaf.cutoff)){
+    temp.data <- data.frame(sample.info,data)
+    # Create unique index for each sample group
+    temp.data.index <- within(temp.data, indx <- as.numeric(interaction(sample.info, 
+                                                                        drop=TRUE,lex.order=TRUE)))
+    #Mean.Tleaf <- aggregate(Tleaf~indx,data=temp.data.index,mean)
+    #Stdev.Tleaf <- aggregate(Tleaf~indx,data=temp.data.index,sd)
+    #names(Mean.Tleaf) <- c("indx","Mean.Tleaf")
+    #names(Stdev.Tleaf) <- c("indx","Stdev.Tleaf")
+    #aggregate(Tleaf~indx,data=temp.data.index, FUN = function(x) quantile(x, probs  = c(0.05,0.95)))
+    stats <- data.frame(Mean.Tleaf=aggregate(Tleaf~indx,data=temp.data.index,mean),
+                        Stdev.Tleaf=aggregate(Tleaf~indx,data=temp.data.index,sd),
+                        CI05=aggregate(Tleaf~indx,data=temp.data.index, 
+                                       FUN = function(x) quantile(x, probs  = 0.05)),
+                        CI95=aggregate(Tleaf~indx,data=temp.data.index, 
+                                       FUN = function(x) quantile(x, probs  = 0.95)))
+    stats <- stats[,-c(3,5,7)]
+    names(stats) <- c("indx","Mean.Tleaf","Stdev.Tleaf","L05.Tleaf","U95.Tleaf")
+    #temp.data2 <- merge(temp.data.index,Mean.Tleaf,by="indx",sort=F) # Preserve original order
+    temp.data2 <- merge(temp.data.index,stats,by="indx",sort=F) # Preserve original order
+    loc <- match(c("INDX"),toupper(names(temp.data2)))
+    temp.data2 <- temp.data2[,-loc[1]]
+    loc <- match(c("TLEAF","MEAN.TLEAF"),toupper(names(temp.data2)))
+    Tleaf.check <- which(temp.data2[,loc[1]] < temp.data2[,loc[2]]-Tleaf.cutoff | 
+                           temp.data2[,loc[1]] > temp.data2[,loc[2]]+Tleaf.cutoff)
+    nms3 <- sample.info[Tleaf.check,]
+    vals3 <- temp.data2[Tleaf.check,loc[1]]
+    vals4 <- temp.data2[Tleaf.check,loc[2]]
+    temp3 <- data.frame(nms3,Mean.Tleaf=vals4,Tleaf=vals3)
+    
+    # update all check flags
+    all.check <- unique(c(all.check,Tleaf.check))
+  } # end if
+  
+  ### Output QA/QC info
+  temp1 <- data.frame(nms1,Cond=vals1)
+  temp2 <- data.frame(nms2,Ci=vals2)
+  
+  if (dim(temp1)[1]>0){
+    write.csv(temp1,file=paste(out.dir,"/","Failed_QC_Conductance_Check.csv",sep=""),row.names=FALSE)
+  }
+  if (dim(temp2)[1]>0){
+    write.csv(temp2,file=paste(out.dir,"/","Failed_QC_Ci_Cutoff_Check.csv",sep=""),row.names=FALSE)
+  }
+  if (dim(temp3)[1]>0){
+    write.csv(temp3,file=paste(out.dir,"/","Failed_QC_Temperature_Cutoff_Check.csv",sep=""),row.names=FALSE)
+  }
+  
+  ### Remove bad data
+  if (length(all.check>0)){
+    data <- data[-all.check,]
+    sample.info <- sample.info[-all.check,]
+  }
+  row.names(data) <- seq(len=nrow(data))
+  row.names(sample.info) <- seq(len=nrow(sample.info))
+  rm(dims,loc,cond.check,ci.check,all.check,nms1,vals1,nms2,vals2,temp1,temp2,Ci.cutoff,Cond.cutoff)
+  
+  ### Return QC data and sample info
+  return(list(Sample.Info=sample.info,GE.data=data))
+  
+} # End of function
 #==================================================================================================#
 
 
