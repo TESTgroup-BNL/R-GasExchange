@@ -12,7 +12,6 @@
 ##' Farquhar functions
 ##' 
 ##' @author Shawn P. Serbin
-##' @references
 ##' 
 # Rd and Vcmax only
 ACi.rubisco <- function(x) {

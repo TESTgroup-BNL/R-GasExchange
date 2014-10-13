@@ -5,22 +5,19 @@
 
 #--------------------------------------------------------------------------------------------------#
 ##'
-##' Read settings file for spectra import and processing
-##' 
-##' @name settings
-##' @title parse settings file used for spectra file import and processing
-##' @param input.file settings file containing information needed for spectra processing
-##'
-##' @examples
-##' \dontrun{
-##' settings <- settings()
-##' settings <- settings('/home/$USER/settings.xml')
-##' }
-##'
-##' @export
-##'
-##' @author Shawn P. Serbin
-##'
+#' Read settings file for spectra import and processing
+#'  
+#' @name settings
+#' @title parse settings file used for spectra file import and processing
+#' @param input.file settings file containing information needed for spectra processing
+#' @export
+#' @examples
+#' \dontrun{
+#' settings <- settings()
+#' settings <- settings('/home/$USER/settings.xml')
+#' }
+#' 
+#' @author Shawn P. Serbin
 settings <- function(input.file=NULL){
   settings.xml <- NULL
   
@@ -55,59 +52,54 @@ settings <- function(input.file=NULL){
 ##'
 ##' A function to read in formatted LiCor 6400 data for processing
 ##'
-##' @name read.ge.data
-##' @title A function to read in formatted LiCor 6400 data files
+##' #@name read.ge.data
+##' #@title A function to read in formatted LiCor 6400 data files
 ##' 
-##' @export
+##' #@export
 ##' 
 #read.ge.data <- function(data.dir=NULL,out.dir=NULL,ge.file.ext=".csv",QC=TRUE,
 #                         output.file.ext=".csv",ge.dataframe=FALSE,settings.file=NULL){
   
-  ### Set platform specific file path delimiter.  Probably will always be "/"
-  dlm <- .Platform$file.sep # <--- What is the platform specific delimiter?
-  
-  ### Check for proper input
-  if (is.null(settings.file) && is.null(file.dir)){
-    print("*********************************************************************************")
-    stop("******* ERROR: No input file directory given in settings file or function call. *******")
-  } else if (!is.null(file.dir)){
-    file.dir <- file.dir
-  } else if (!is.null(settings.file$data.dir)){
-    file.dir <- settings.file$data.dir
-  } 
-  
-  
-  if (QC==TRUE){
-    print("******** Applying QA/QC Checks to Data ********")
-    
-    ### Remove samples not passing initial QC
-    loc <- match("QC",toupper(names(ge.data)))
-    remove <- which(ge.data[loc]==1)
-    if(length(remove)>0){
-      ge.data <- ge.data[,-remove]
-    }
-    rm(loc,remove)
-    
-    ### Find sample info and data columns
-    pattern <- c("QC","COMMENTS")
-    x <- toupper(names(ge.data))
-    remove <- match(pattern,x)
-    if (length(remove)>0){
-      ge.data <- ge.data[,-remove]
-    }
-    rm(pattern,x,remove)
-    
-  } # End QC loop
+#   ### Set platform specific file path delimiter.  Probably will always be "/"
+#   dlm <- .Platform$file.sep # <--- What is the platform specific delimiter?
+#   
+#   ### Check for proper input
+#   if (is.null(settings.file) && is.null(file.dir)){
+#     print("*********************************************************************************")
+#     stop("******* ERROR: No input file directory given in settings file or function call. *******")
+#   } else if (!is.null(file.dir)){
+#     file.dir <- file.dir
+#   } else if (!is.null(settings.file$data.dir)){
+#     file.dir <- settings.file$data.dir
+#   } 
+#   
+#   
+#   if (QC==TRUE){
+#     print("******** Applying QA/QC Checks to Data ********")
+#     
+#     ### Remove samples not passing initial QC
+#     loc <- match("QC",toupper(names(ge.data)))
+#     remove <- which(ge.data[loc]==1)
+#     if(length(remove)>0){
+#       ge.data <- ge.data[,-remove]
+#     }
+#     rm(loc,remove)
+#     
+#     ### Find sample info and data columns
+#     pattern <- c("QC","COMMENTS")
+#     x <- toupper(names(ge.data))
+#     remove <- match(pattern,x)
+#     if (length(remove)>0){
+#       ge.data <- ge.data[,-remove]
+#     }
+#     rm(pattern,x,remove)
+#     
+#   } # End QC loop
 
-  
-  
-  
-  
-  
   ### Algorithm options
   #deoptim.lower.bounds <- as.numeric(strsplit(settings$algorithm.options$deoptim.lower.bounds,split = ",")[[1]])
   
-} # End of function call
+#} # End of function call
 #==================================================================================================#
 
 
@@ -242,28 +234,28 @@ data.qc <- function(data=NULL,out.dir=NULL,Cond.cutoff=NULL,Ci.cutoff=NULL,
 ##' 
 ##' @name arrhenius.scaling
 ##' @title An Arrhenius temperature scaling function for temperature dependent parameters
-##' @param temp1 the temperature (in degrees C) of the observation at the base temperature
-##' @param temp2 the desired temperature (in degrees C) to scale the observation
-##' @param E activation energy of the Arrhenius equation
-##' @param Val.temp1 the value of the observation at the base temperature
+##' @param Tleaf.1 the temperature (in degrees C) of the observation at the base temperature
+##' @param Tleaf.2 the desired temperature (in degrees C) to scale the observation
+##' @param Ea activation energy of the Arrhenius equation
+##' @param Obs.val the value of the observation at the base temperature (i.e. Tleaf.1)
 ##' 
 ##' @examples
-##' arrhenius.scaling(temp1=15,temp2=25,E=54.08,Val.temp1=40)
+##' arrhenius.scaling(Tleaf.1=25,Tleaf.2=30,Ea=45.23,Obs.val=140.4)
 ##' 
-##' @export
+##' # Bernacchi et al., 
+##' Kc <- arrhenius.scaling(Tleaf.1=25,Tleaf.2=30,Ea=79.430,Obs.val=404.9)
+##' Ko <- arrhenius.scaling(Tleaf.1=25,Tleaf.2=30,Ea=36.380,Obs.val=278.4)
+##' Ko <- arrhenius.scaling(Tleaf.1=25,Tleaf.2=30,Ea=36.380,Obs.val=278.4)
+##' Gamma.Star <- arrhenius.scaling(Tleaf.1=25,Tleaf.2=30,Ea=37.830,Obs.val=42.75)
+##' 
 ##'
 ##' @author Shawn P. Serbin
 ##' 
-arrhenius.scaling <- function(temp1=NULL,temp2=NULL,E=NULL,Val.temp1=NULL){
-  
+arrhenius.scaling <- function(Tleaf.1=NULL,Tleaf.2=NULL,Ea=NULL,Obs.val=NULL){
   R <- 0.008314472        ## Ideal gas constant
-  temp1 <- temp1+273.15   ## First temperature
-  temp2 <- temp2+273.15   ## Second temperature
-  
-  # Arrhenius scaling function
-  result <- Val.temp1*exp((E/R)*((1/temp1)-(1/temp2)))
-  return(result)
-  
+  Obs.val.Tleaf2 <- Obs.val*exp((Ea*((Tleaf.2+273.15)-(Tleaf.1+273.15)))/((Tleaf.1+273.15)*R*(Tleaf.2+273.15)))
+  return(Obs.val.Tleaf2)
+
   # Param25 <- x[1]
   # E <- x[2]
   #Param <- Param25*exp((E*((Tleaf+273.15)-(stand.temp+273.15)))/((stand.temp+273.15)*R*(Tleaf+273.15)))
