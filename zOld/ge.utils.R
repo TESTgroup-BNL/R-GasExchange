@@ -49,6 +49,22 @@ settings <- function(input.file=NULL){
 
 
 #--------------------------------------------------------------------------------------------------#
+##' A function to read in formatted LiCor 6400 data for processing
+##' @name read.ge.data
+##' @title A function to read in formatted LiCor 6400 data files.  Does some inital error
+##' checking including removal of missing value flags (e.g. -99,-999,-9999,-9999.0) and
+##' checking of proper data columns
+##' @param in.dir
+##' @param dataset
+##' 
+##' @author Shawn P. Serbin
+read.ge.data <- function(data.dir=NULL,out.dir=NULL,ge.file.ext=".csv",QC=TRUE){
+  
+} ### End of function call
+#==================================================================================================#
+
+
+#--------------------------------------------------------------------------------------------------#
 ##'
 ##' A function to read in formatted LiCor 6400 data for processing
 ##'

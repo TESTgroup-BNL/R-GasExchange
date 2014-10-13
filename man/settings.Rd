@@ -9,7 +9,7 @@ settings(input.file = NULL)
 \item{input.file}{settings file containing information needed for spectra processing}
 }
 \description{
-Read settings file for spectra import and processing
+Read settings file
 }
 \examples{
 \dontrun{

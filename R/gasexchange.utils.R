@@ -4,7 +4,7 @@
 
 #--------------------------------------------------------------------------------------------------#
 ##'
-##' Read settings file for spectra import and processing
+##' Read settings file
 ##'  
 ##' @name settings
 ##' @title parse settings file used for spectra file import and processing
@@ -38,6 +38,104 @@ settings <- function(input.file=NULL){
   #invisible(settings.list) # invisible option
   return(settings.list)
 } ### End of function
+#==================================================================================================#
+
+
+#--------------------------------------------------------------------------------------------------#
+##' A function to read in formatted LiCor 6400 data for processing
+##' @name read.ge.data
+##' @title A function to read in formatted LiCor 6400 data files.  Does some inital error
+##' checking including removal of missing value flags (e.g. -99,-999,-9999,-9999.0) and
+##' checking of proper data columns
+##' @param in.dir
+##' @param dataset Optional
+##' @param QC Run QC checks on data import?  Dafault is QC=FALSE.  This is typically run
+##' as part of the fitting functions.
+##' 
+##' @examples
+##' \dontrun{
+##' in.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci.csv'
+##' in.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci-test.csv'
+##' in.dir <- system.file("extdata/barrow-aci.csv",package="GasExchange")
+##' ge.data <- read.ge.data(in.dir=in.dir)
+##' 
+##' }
+##' 
+##' @author Shawn P. Serbin
+read.ge.data <- function(in.dir=NULL,dataset=NULL,QC=FALSE){
+  
+  ### Set platform specific file path delimiter.  Probably will always be "/"
+  dlm <- .Platform$file.sep # <--- What is the platform specific delimiter?
+  
+  print("--> Reading in LiCor data")
+  
+  # Check for in.dir/file or just in.dir
+  check <- file.info(in.dir)
+  
+  if (check$isdir==FALSE | !is.null(dataset)){
+    ge.data <- read.table(in.dir, header=T,sep=",")
+  } else {
+    ge.data <- read.table(paste(in.dir,"/",dataset,sep=""), header=T,sep=",")
+  }
+
+  # Clean up any missing data  
+  ge.data[ge.data==-99] <- NA  
+  ge.data[ge.data==-999] <- NA
+  ge.data[ge.data==-9999] <- NA
+  
+  # Check for required columns.  Order doesn't matter here.  Just looks for matching column names
+  # !!Needs refinement!!
+  template.names <- c("Date","Area","Tair","Tleaf","deltaT","RH_R","RH_S","VpdA","VpdL","PARi",
+                      "PARo","Press","Ci_Ca","CO2R","CO2S","Photo","Cond","Ci")
+  template.names.upper <- toupper(template.names)
+  column.check <- toupper(template.names) %in% toupper(names(ge.data))
+  if (length(which(column.check==FALSE))>0) {
+    cols <- which(column.check==FALSE)
+    print("Initial check of input data: FAIL")
+    print("Missing Columns:")
+    print(as.vector(template.names[cols]))
+    stop("***Please correct error before proceeding***")
+  } else {
+    print("Initial check of input data: PASS")
+  }
+  rm(column.check)
+  
+  # Remove QC=1 observations.  Initial QC columns
+#   qc.loc <- match("QC",toupper(names(ge.data)))
+#   if (length(qc.loc)>0){
+#     remove <- which(ge.data[qc.loc]==1)
+#     if(length(remove)>0){
+#       ge.data <- ge.data[-remove,]
+#     }
+#   }
+#   rm(qc.loc,remove)
+
+  # Make sure there is data in the required columns
+  required <- c("Tleaf","VpdL","PARi","CO2R","CO2S","Photo","Cond","Ci")
+  #required.upper <- toupper(required)
+  cols <- which(toupper(names(ge.data)) %in% toupper(required))
+  check <- which(is.na(ge.data[cols]))
+  if (length(check)>0){
+    warning("Some missing data found in required columns.  Please check that this is not an error")
+    print("Proceeding for now....")
+  } else {
+    print("Initial check of missing data: PASS")
+  }
+
+  #op <- options(error = expression("Missing values"))
+  #stopifnot(complete.cases(ge.data[cols]) != is.na(ge.data[cols]))
+  #print("Missing data input dataset")
+  #options(op)
+  
+  # return dataset
+  print(" ")
+  print("--> Returing dataset")
+  print(" ")
+  print("Names of input dataset: ")
+  print(" ")
+  print(names(ge.data))
+  return(ge.data)
+} ### End of function call
 #==================================================================================================#
 
 

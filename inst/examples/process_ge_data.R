@@ -1,6 +1,6 @@
 ####################################################################################################
 #
-#    --- Last updated:  7.12.2013 BY Shawn Serbin <serbin@wisc.edu>
+#    --- Last updated:  10.13.2014 BY Shawn P. Serbin <sserbin@bnl.gov>
 ####################################################################################################
 
 
@@ -20,5 +20,12 @@ library(GasExchange)
 
 #--------------------------------------------------------------------------------------------------#
 ### Load XML settings file (if using). Need to put in full path to xml file.
-settings <- ge.settings('/Users/serbin/Data/GitHub/R-GasExchange/inst/extdata/settings.xml')
+#settings <- ge.settings('/Users/serbin/Data/GitHub/R-GasExchange/inst/extdata/settings.xml')
+#--------------------------------------------------------------------------------------------------#
+
+
+#--------------------------------------------------------------------------------------------------#
+### Read in some gasex data
+in.dir <- system.file("extdata/barrow-aci.csv",package="GasExchange")
+ge.data <- read.ge.data(in.dir=in.dir)
 #--------------------------------------------------------------------------------------------------#
