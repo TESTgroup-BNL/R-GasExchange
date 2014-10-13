@@ -47,22 +47,24 @@ settings <- function(input.file=NULL){
 ##' @title A function to read in formatted LiCor 6400 data files.  Does some inital error
 ##' checking including removal of missing value flags (e.g. -99,-999,-9999,-9999.0) and
 ##' checking of proper data columns
-##' @param in.dir
-##' @param dataset Optional
+##' @param file.dir
+##' @param data.file Optional
 ##' @param QC Run QC checks on data import?  Dafault is QC=FALSE.  This is typically run
 ##' as part of the fitting functions.
 ##' 
 ##' @examples
 ##' \dontrun{
-##' in.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci.csv'
-##' in.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci-test.csv'
-##' in.dir <- system.file("extdata/barrow-aci.csv",package="GasExchange")
-##' ge.data <- read.ge.data(in.dir=in.dir)
+##' file.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci.csv'
+##' file.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci-test.csv'
+##' file.dir <- system.file("extdata/barrow-aci.csv",package="GasExchange")
+##' ge.data <- read.ge.data(file.dir=file.dir)
 ##' 
 ##' }
 ##' 
+##' @export
+##' 
 ##' @author Shawn P. Serbin
-read.ge.data <- function(in.dir=NULL,dataset=NULL,QC=FALSE){
+read.ge.data <- function(file.dir=NULL,data.file=NULL,QC=FALSE){
   
   ### Set platform specific file path delimiter.  Probably will always be "/"
   dlm <- .Platform$file.sep # <--- What is the platform specific delimiter?
@@ -70,12 +72,12 @@ read.ge.data <- function(in.dir=NULL,dataset=NULL,QC=FALSE){
   print("--> Reading in LiCor data")
   
   # Check for in.dir/file or just in.dir
-  check <- file.info(in.dir)
+  check <- file.info(file.dir)
   
-  if (check$isdir==FALSE | !is.null(dataset)){
-    ge.data <- read.table(in.dir, header=T,sep=",")
+  if (check$isdir==FALSE | !is.null(data.file)){
+    ge.data <- read.table(file.dir, header=T,sep=",")
   } else {
-    ge.data <- read.table(paste(in.dir,"/",dataset,sep=""), header=T,sep=",")
+    ge.data <- read.table(paste(file.dir,"/",data.file,sep=""), header=T,sep=",")
   }
 
   # Clean up any missing data  
@@ -83,6 +85,13 @@ read.ge.data <- function(in.dir=NULL,dataset=NULL,QC=FALSE){
   ge.data[ge.data==-999] <- NA
   ge.data[ge.data==-9999] <- NA
   
+  # Remove comments column
+  remove <- match("COMMENTS",toupper(names(ge.data)))
+  if (length(remove)>0){
+    ge.data <- ge.data[,-remove]
+  }
+  rm(remove)
+
   # Check for required columns.  Order doesn't matter here.  Just looks for matching column names
   # !!Needs refinement!!
   template.names <- c("Date","Area","Tair","Tleaf","deltaT","RH_R","RH_S","VpdA","VpdL","PARi",
@@ -126,15 +135,26 @@ read.ge.data <- function(in.dir=NULL,dataset=NULL,QC=FALSE){
   #stopifnot(complete.cases(ge.data[cols]) != is.na(ge.data[cols]))
   #print("Missing data input dataset")
   #options(op)
-  
+
+  ### Find data columns and separate sample info
+  template.names.2 <- toupper(c("Area","Tair","Tleaf","deltaT","RH_R","RH_S","VpdA","VpdL","PARi",
+                    "PARo","Press","Ci_Ca","CO2R","CO2S","Photo","Cond","Ci"))
+  keep <- match(template.names.2,toupper(names(ge.data)))
+  sample.info <- ge.data[,-keep]
+  ge.data.out <- ge.data[,keep]
+  # Clean up sample info, remove any white spaces
+  temp <- as.data.frame(lapply(sample.info,gsub,pattern=" ",replacement=""))
+  sample.info <- temp
+  rm(template.names.2,keep,temp)
+
   # return dataset
   print(" ")
   print("--> Returing dataset")
   print(" ")
-  print("Names of input dataset: ")
-  print(" ")
-  print(names(ge.data))
-  return(ge.data)
+  #return(ge.data)
+  ### Return data and sample info
+  return(list(Sample.Info=sample.info,GE.data=ge.data.out))
+
 } ### End of function call
 #==================================================================================================#
 

@@ -26,6 +26,16 @@ library(GasExchange)
 
 #--------------------------------------------------------------------------------------------------#
 ### Read in some gasex data
-in.dir <- system.file("extdata/barrow-aci.csv",package="GasExchange")
-ge.data <- read.ge.data(in.dir=in.dir)
+in.file <- system.file("extdata/barrow-aci.csv",package="GasExchange")
+ge.data <- read.ge.data(file.dir=in.file)
 #--------------------------------------------------------------------------------------------------#
+
+
+#--------------------------------------------------------------------------------------------------#
+### Plot raw data
+plot.raw(data=ge.data)
+
+
+samples <- unique(ge.data$Sample.Info)  # NEE TO REMOVE QC before binning to samples!!
+#--------------------------------------------------------------------------------------------------#
+

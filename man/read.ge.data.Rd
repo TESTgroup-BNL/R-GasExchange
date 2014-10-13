@@ -5,12 +5,12 @@
 checking including removal of missing value flags (e.g. -99,-999,-9999,-9999.0) and
 checking of proper data columns}
 \usage{
-read.ge.data(in.dir = NULL, dataset = NULL, QC = FALSE)
+read.ge.data(file.dir = NULL, data.file = NULL, QC = FALSE)
 }
 \arguments{
-\item{in.dir}{}
+\item{file.dir}{}
 
-\item{dataset}{Optional}
+\item{data.file}{Optional}
 
 \item{QC}{Run QC checks on data import?  Dafault is QC=FALSE.  This is typically run
 as part of the fitting functions.}
@@ -20,10 +20,10 @@ A function to read in formatted LiCor 6400 data for processing
 }
 \examples{
 \dontrun{
-in.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci.csv'
-in.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci-test.csv'
-in.dir <- system.file("extdata/barrow-aci.csv",package="GasExchange")
-ge.data <- read.ge.data(in.dir=in.dir)
+file.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci.csv'
+file.dir <- '/Users/sserbin/Data/GitHub/R-GasExchange/inst/extdata/barrow-aci-test.csv'
+file.dir <- system.file("extdata/barrow-aci.csv",package="GasExchange")
+ge.data <- read.ge.data(file.dir=file.dir)
 
 }
 }
