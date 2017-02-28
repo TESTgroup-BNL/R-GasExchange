@@ -2,7 +2,7 @@
 # A set of helper functions and utils for LiCor GE data processing
 #
 #
-# Last Updated: 09.09.2014 By Shawn P. Serbin <sserbin@bnl.gov>
+# Last Updated: 03.30.2016 By Shawn P. Serbin <sserbin@bnl.gov>
 #--------------------------------------------------------------------------------------------------#
 
 
@@ -451,7 +451,7 @@ plot.temp.response <- function(type=c("Arrhenius","Peaked","June"),var,data,DEop
     plot(data[,loc1[1]],data[,loc1[2]],pch=21,bg="grey70",cex=3,cex.axis=cexaxis,xlim=c(range(data[,loc1[1]])[1]-2,
                                                                                         range(data[,loc1[1]])[2]),
          ylim=c(range(data[,loc1[2]])[1]-5,range(data[,loc1[2]])[2]+5),cex.lab=cexlab,xlab="Tleaf",
-         ylab="Vcmax",main=paste(file))
+         ylab=paste(var),main=paste(file))
     box(lwd=2.2)
     
     # Best member parameter trace plots
@@ -467,7 +467,7 @@ plot.temp.response <- function(type=c("Arrhenius","Peaked","June"),var,data,DEop
     
     # Plot output
     plotTemp <- seq(0,200,0.2)
-    par(mfrow=c(1,1),mar <- c(5,5,2,1))
+    par(mfrow=c(1,1),mar <- c(5,5,2,1),oma=c(1,1,1,1))
     xlim <- range(data[,loc1[1]])
     ylim <- range(fit.data[,1])
     plot(Tleaf, fit.data[,1], xlab="Temperature (degC)", ylab=var, cex.lab=2, pch=21, cex=2.2,bg="grey50",

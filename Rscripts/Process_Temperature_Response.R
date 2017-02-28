@@ -20,30 +20,30 @@ closeAllConnections()   # close any open connections to files
 
 #---------------- *User defined settings.* --------------------------------------------------------#
 ## Sample options
-species <- NULL     # define the species to fit or NULL for all species/samples
+species <- ''     # define the species to fit or NULL for all species/samples
 t.response <- FALSE  # TRUE just use data collected to estimate Ea, or FALSE to use all data
 date <- NULL
 year <- NULL
 
 ### Location of R scripts.  Needed for Farquhar model optimization. Contains functions.
-r.functions <- '/Volumes/TEST/Projects/Leaf_Photosynthesis/NGEE-Arctic/'
+r.functions <- ''
 
 ### Input LI6400 dataset.  First define location of file (i.e. directory). 
-in.dir <- '/Volumes/TEST/Projects/NGEE-Arctic/Data/Barrow/Gas_Exchange/R_Output/Processed_LI6400_Data/NGEE-Arctic_2012-2015_ACi_Data_final.NADPH/'
+in.dir <- ''
 
 ### Barrow data
-dataset <- 'NGEE-Arctic_2012-2015_ACi_AR3.processed.csv'
+dataset <- ''
 ge.data <- read.table(paste(in.dir,"/",dataset,sep=""), header=T,sep=",")
 summary(ge.data)          ## Summary of dataset
 
 ### Main output directory 
-out.dir <- '/Volumes/TEST/Projects/NGEE-Arctic/Data/Barrow/Gas_Exchange/R_Output/Processed_LI6400_Data/NGEE-Arctic_2012-2015_ACi_Data_final.NADPH/Temperature_Response/'
+out.dir <- ''
 if (! file.exists(out.dir)) dir.create(out.dir,recursive=TRUE)
 
 # ********************************** Temp model options **********************************
 model.type <- "Arrhenius"         ## Options: Arrhenius, Peaked, ?June?
 stand.temp <- 10 #25              ## Options: 15,25, etc
-Photo.Parameter <- "Vcmax"        ## Options: Vcmax, Jmax
+Photo.Parameter <- "Jmax"        ## Options: Vcmax, Jmax
 # ********************************** Temp model options **********************************
 
 # ********************************** DEoptim Options **********************************
@@ -119,8 +119,6 @@ sample.info <- ge.data[,seq(1,ind1,1)]  # keep everything to the left of Date as
 ##### Arrehnius
 # Grab the relevant data
 if (!is.null(species)){
-#  sub.data <- data.frame(sample.info[which(sample.info$USDA_Species_Code==species),],
-#                         ge.data[which(sample.info$USDA_Species_Code==species),])
   sub.data <- data.frame(ge.data[which(sample.info$USDA_Species_Code==species),])
   file <- unique(sub.data$USDA_Species_Code)
 } else {
@@ -132,6 +130,9 @@ if (t.response==TRUE) {
   sub.data <- sub.data[duplicated(sub.data$Sample_Barcode),]
 }
 
+# Remove missing
+remove <- which(sub.data$Jmax==-9999)
+sub.data <- droplevels(sub.data[-remove,])
 
 Tleaf <- sub.data$Mean.Tleaf
 fit.data <- sub.data[Photo.Parameter]

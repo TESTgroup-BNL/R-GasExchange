@@ -30,15 +30,13 @@ closeAllConnections()   # close any open connections to files
 
 #---------------- *User defined settings.* --------------------------------------------------------#
 ### Location of R scripts.  Needed for Farquhar model optimization. Contains functions.
-r.functions <- '/Volumes/TEST/Projects/Leaf_Photosynthesis/NGEE-Arctic/'
+r.functions <- ''  # Path to photo.processing.functions.R
 
 ### Input LI6400 dataset.  First define location of file (i.e. directory). 
-#in.dir <- '/Volumes/TEST/Projects/Global_Vcmax_Synthesis_Project/'
-in.dir <- '/Volumes/TEST/Projects/NGEE-Arctic/Data/Barrow/Gas_Exchange/ACi/'
+in.dir <- ''
 
 ### Barrow data
-#dataset <- 'Rogers_GVSP_QA_for_400_errors_round2.csv'
-dataset <- 'NGEE-Arctic_2012-2015_ACi_AR3.csv'
+dataset <- ''
 
 ### Define input file to be processed
 ge.data <- read.table(paste(in.dir,"/",dataset,sep=""), header=T,sep=",")
@@ -54,7 +52,7 @@ names(ge.data)
 ge.data$deltaT <- ge.data$Tleaf - ge.data$Tair
 
 ### Main output directory 
-out.dir <- '' # update with output directory
+out.dir <- ''
 
 unlink(out.dir,recursive=T) # delete old output if rerunning
 if (! file.exists(out.dir)) dir.create(out.dir,recursive=TRUE)
@@ -104,18 +102,13 @@ CR <- 0.6                         ## Crossover probability from interval [0,1]. 
 # & Bernacchi et al., 2013. Plant, Cell and Environment.
 #
 #
-#R       <- 0.008314472               ## Ideal gas constant
 R       <- 8.314                     ## Ideal gas constant. J mol-1 K-1
 Oxygen  <- 210                       ## Oxygen value (ubar)
-#Oxygen  <- 21
 Kc25    <- 404.9                     ## umol m-1
-#Ekc     <- 79.430                    ## kJ mol-1
 Ekc     <- 79430
 Ko25    <- 278.4                     ## mmol m-1
-#Eko     <- 36.380                    ## kJ mol-1
 Eko     <- 36380
 Gstar25 <- 42.75                     ## umol m-1
-#EGstar  <- 37.830                    ## kJ mol-1
 EGstar  <- 37830
 mm.constants <- list(R=R,Oxygen=Oxygen,Kc25=Kc25,Ekc=Ekc,Ko25=Ko25,Eko=Eko,Gstar25=Gstar25,
                      EGstar=EGstar)
